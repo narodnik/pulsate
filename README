@@ -1,0 +1,15 @@
+Python PIP dependencies (pip install --user <package>):
+
+* python-magic
+* sqlite3
+* janus
+* dbussy
+
+Then start the daemon in another window (or inside a screen session):
+
+$ python pulsated.py
+
+Now you can view your messages with the show utility:
+
+$ python show.py
+
