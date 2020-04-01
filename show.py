@@ -1,56 +1,25 @@
 import asyncio
+import codecs
 import signalcli
-import sqlite3
-
-class SignalMessageDatabase:
-    def __init__(self, filename):
-        self._database = sqlite3.connect("main.db")
-        self._cursor = self._database.cursor()
-
-    def fetch(self, begin_timestamp=0):
-        messages = []
-
-        self._cursor.execute("""
-            SELECT id, timestamp, source, destination, group_id, text
-            FROM messages
-            WHERE timestamp >= ?
-            ORDER BY timestamp ASC
-        """, (begin_timestamp,))
-
-        for (message_id, timestamp, source, destination, group_id, text) \
-            in self._cursor.fetchall():
-
-            group_id = [x for x in group_id] if group_id is not None else None
-
-            self._cursor.execute("""
-                SELECT attachment
-                FROM attachments
-                WHERE message_id=?
-            """, (message_id,))
-            attachments = [attachment for (attachment,)
-                           in self._cursor.fetchall()]
-            message = signalcli.SignalMessage(timestamp, source, destination,
-                                              group_id, text, attachments)
-            messages.append(message)
-
-        return messages
+import signaldb
+import magic
 
 async def main():
-    import magic
-
-    my_telephone = "+34685646266"
-    signal = signalcli.SignalCli(my_telephone)
+    signal = signalcli.SignalCli()
     await signal.connect()
 
-    signal_db = SignalMessageDatabase("main.db")
+    signal_db = signaldb.SignalMessageDatabase("main.db")
 
-    for message in signal_db.fetch()[-20:]:
+    for message in signal_db.fetch()[-40:]:
         display_line = ""
 
         if message.group_id:
             group_name = await signal.get_group_name(message.group_id)
             if group_name == "":
                 group_name = "(Unnamed group)"
+
+            group_id = codecs.encode(message.group_id, 'hex').decode('ascii')
+            group_name += " %s" % group_id
         else:
             group_name = None
 

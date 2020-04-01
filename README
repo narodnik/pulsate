@@ -3,7 +3,7 @@ Python PIP dependencies (pip install --user <package>):
 * python-magic
 * sqlite3
 * janus
-* dbussy
+* dbus-next
 
 You will need my hacked signal-cli:
 

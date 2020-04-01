@@ -34,8 +34,6 @@ async def main():
     while True:
         message = await signal.receive_message()
 
-        group_id = bytearray(message.group_id) if message.group_id else None
-
         cursor.execute("""
             INSERT INTO messages (timestamp, source, destination,
                                   group_id, text)
