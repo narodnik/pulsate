@@ -2,8 +2,8 @@ import signalcli
 import sqlite3
 
 class SignalMessageDatabase:
-    def __init__(self, filename):
-        self._database = sqlite3.connect("main.db")
+    def __init__(self, filename="main.db"):
+        self._database = sqlite3.connect(filename)
         self._cursor = self._database.cursor()
 
     def fetch(self, begin_timestamp=0):
@@ -31,4 +31,15 @@ class SignalMessageDatabase:
             messages.append(message)
 
         return messages
+
+    def fetch_numbers(self):
+        self._cursor.execute("""
+            SELECT source
+            FROM messages
+            UNION
+            SELECT destination
+            FROM messages
+            WHERE destination IS NOT NULL
+        """)
+        return self._cursor.fetchall()
 

@@ -18,6 +18,13 @@ class SignalMessage:
         self.text = text
         self.attachments = attachments
 
+    def __repr__(self):
+        return ("<timestamp=%s source=%s destination=%s group_id=%s "
+            + "text=%s attachments=%s>") % (
+                self.timestamp, self.source, self.destination, self.group_id,
+                self.text, self.attachments
+            )
+
 class SignalCli:
 
     def __init__(self):
@@ -47,25 +54,10 @@ class SignalCli:
 
     def _on_sync_message_received(self, timestamp, source, destination,
                                   group_id, message, attachments):
+        destination = destination if destination else None
         message = SignalMessage(timestamp, source, destination,
                                 group_id, message, attachments)
         self._queue.sync_q.put(message)
-
-    def handle_message(self, connection, message, user_data) :
-        if message.member == "MessageReceived":
-            # timestamp, number, [group id], message, [attachments]
-            objects = message.expect_objects("xsaysas")
-            timestamp, source, group_id, message, attachments = objects
-            message = SignalMessage(timestamp, source, None, group_id,
-                                    message, attachments)
-        elif message.member == "SyncMessageReceived":
-            # timestamp, source, dest, [group id], message, [attachments]
-            objects = message.expect_objects("xssaysas")
-            message = SignalMessage(*objects)
-        else:
-            print("Internal error: unhandled member type", file=sys.stderr)
-        self._queue.sync_q.put(message)
-        return DBUS.HANDLER_RESULT_HANDLED
 
     async def receive_message(self):
         return await self._queue.async_q.get()
@@ -104,7 +96,7 @@ async def main():
     group_ids = await signal.get_group_ids()
     for group_id in group_ids:
         name = await signal.get_group_name(group_id)
-        print(codecs.encode(group_id, 'hex'), name)
+        print(codecs.encode(group_id, 'hex').decode('ascii'), name)
 
         numbers = await signal.group_members(group_id)
         for number in numbers:
@@ -113,9 +105,9 @@ async def main():
             name = await signal.get_contact_name(number)
             print("    %s\t%s" % (name, number))
 
-    #while True:
-    #    message = await signal.receive_message()
-    #    print(message, message.text)
+    while True:
+        message = await signal.receive_message()
+        print(message, message.text)
 
 if __name__ == "__main__":
     asyncio.get_event_loop().run_until_complete(main())

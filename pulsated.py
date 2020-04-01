@@ -3,8 +3,7 @@ import signalcli
 import sqlite3
 
 async def main():
-    my_telephone = "+34685646266"
-    signal = signalcli.SignalCli(my_telephone)
+    signal = signalcli.SignalCli()
     await signal.connect()
 
     database = sqlite3.connect("main.db")
