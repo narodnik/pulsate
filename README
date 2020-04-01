@@ -5,6 +5,15 @@ Python PIP dependencies (pip install --user <package>):
 * janus
 * dbussy
 
+You will need my hacked signal-cli:
+
+$ git clone github.com/narodnik/signal-cli/
+$ cd signal-cli
+$ gradle build && gradle installDist
+$ ./build/install/signal-cli/bin/signal-cli -u +12yoursignalnumber daemon
+
+Also you will need to link signal (search the manual).
+
 Then start the daemon in another window (or inside a screen session):
 
 $ python pulsated.py
