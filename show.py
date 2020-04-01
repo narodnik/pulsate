@@ -7,14 +7,15 @@ class SignalMessageDatabase:
         self._database = sqlite3.connect("main.db")
         self._cursor = self._database.cursor()
 
-    def fetch(self):
+    def fetch(self, begin_timestamp=0):
         messages = []
 
         self._cursor.execute("""
             SELECT id, timestamp, source, destination, group_id, text
             FROM messages
+            WHERE timestamp >= ?
             ORDER BY timestamp ASC
-        """)
+        """, (begin_timestamp,))
 
         for (message_id, timestamp, source, destination, group_id, text) \
             in self._cursor.fetchall():
@@ -34,16 +35,16 @@ class SignalMessageDatabase:
 
         return messages
 
-import magic
-
 async def main():
+    import magic
+
     my_telephone = "+34685646266"
     signal = signalcli.SignalCli(my_telephone)
     await signal.connect()
 
     signal_db = SignalMessageDatabase("main.db")
 
-    for message in signal_db.fetch():
+    for message in signal_db.fetch()[-20:]:
         display_line = ""
 
         if message.group_id:
