@@ -28,8 +28,11 @@ async def main():
                 display_line += "%s - " % group_name
 
             contact_name = await signal.get_contact_name(message.source)
-            display_line += "%s (%s): %s" % (
-                contact_name, message.source, message.text)
+            if contact_name is None:
+                display_line += "%s: %s" % (message.source, message.text)
+            else:
+                display_line += "%s (%s): %s" % (
+                    contact_name, message.source, message.text)
         else:
             if group_name:
                 destination = group_name

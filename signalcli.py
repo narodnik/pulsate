@@ -1,5 +1,6 @@
 import asyncio
 import dbus_next.aio as dbus
+import dbus_next
 import janus
 import sys
 
@@ -71,8 +72,11 @@ class SignalCli:
         return numbers
 
     async def get_contact_name(self, number):
-        name = await self._interface.call_get_contact_name(number)
-        return name
+        try:
+            name = await self._interface.call_get_contact_name(number)
+            return name
+        except dbus_next.errors.DBusError:
+            return None
 
     async def get_group_ids(self):
         group_ids = await self._interface.call_get_group_ids()
