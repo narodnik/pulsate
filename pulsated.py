@@ -38,7 +38,7 @@ async def main():
                                   group_id, text)
             VALUES (?, ?, ?, ?, ?)
         """, (message.timestamp, message.source, message.destination,
-              group_id, message.text))
+              message.group_id, message.text))
 
         message_id = cursor.lastrowid
 

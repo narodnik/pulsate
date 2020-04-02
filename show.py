@@ -10,7 +10,7 @@ async def main():
 
     signal_db = signaldb.SignalMessageDatabase("main.db")
 
-    for message in signal_db.fetch()[-40:]:
+    for message in signal_db.fetch()[-60:]:
         display_line = ""
 
         if message.group_id:
@@ -28,14 +28,16 @@ async def main():
                 display_line += "%s - " % group_name
 
             contact_name = await signal.get_contact_name(message.source)
-            display_line += "%s: %s" % (contact_name, message.text)
+            display_line += "%s (%s): %s" % (
+                contact_name, message.source, message.text)
         else:
             if group_name:
                 destination = group_name
             else:
                 destination = await signal.get_contact_name(message.destination)
 
-            display_line += "Me to %s: %s" % (destination, message.text)
+            display_line += "Me to %s (%s): %s" % (
+                destination, message.destination, message.text)
 
         print(display_line)
 
