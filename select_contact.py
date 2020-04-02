@@ -1,6 +1,7 @@
 import asyncio
 import binascii
 import codecs
+import iterfzf
 import signalcli
 import signaldb
 
@@ -38,13 +39,19 @@ def select(choice=None):
     contact_dict = compute_contact_dict()
 
     if choice is None:
-        import iterfzf
         number = iterfzf.iterfzf(contact_dict.keys())
         channel = contact_dict[number]
-    elif choice in contact_dict.keys():
-        channel = contact_dict[choice]
     else:
-        channel = choice
+        choices = [name for name in contact_dict.keys()
+                   if name.startswith(choice)]
+        if len(choices) > 1:
+            name = iterfzf.iterfzf(choices)
+            channel = contact_dict[name]
+        elif len(choices) == 1:
+            name = choices[0]
+            channel = contact_dict[name]
+        else:
+            channel = choice
 
     try:
         is_group = True
