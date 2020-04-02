@@ -48,12 +48,16 @@ class SignalCli:
 
     def _on_message_received(self, timestamp, sender,
                              group_id, message, attachments):
+        if not message and not attachments:
+            return
         message = SignalMessage(timestamp, sender, None,
                                 group_id, message, attachments)
         self._queue.sync_q.put(message)
 
     def _on_sync_message_received(self, timestamp, source, destination,
                                   group_id, message, attachments):
+        if not message and not attachments:
+            return
         destination = destination if destination else None
         message = SignalMessage(timestamp, source, destination,
                                 group_id, message, attachments)
