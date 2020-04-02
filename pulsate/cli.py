@@ -95,8 +95,10 @@ class SignalCli:
 
 async def main():
     import codecs
+    from pulsate.config import load_config
 
-    my_telephone = "+34685646266"
+    config = pulsate.load_config()
+    my_telephone = config["my_telephone"]
 
     signal = SignalCli()
     await signal.connect()

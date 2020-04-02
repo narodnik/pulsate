@@ -6,7 +6,9 @@ async def main():
     signal = pulsate.SignalCli()
     await signal.connect()
 
-    signal_db = pulsate.SignalMessageDatabase("main.db")
+    config = pulsate.load_config()
+    database_filename = config["database"]
+    signal_db = pulsate.SignalMessageDatabase(database_filename)
 
     while True:
         message = await signal.receive_message()

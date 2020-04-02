@@ -11,7 +11,6 @@ import sys
 import traceback
 import re
 import time
-import toml
 import logging
 import locale
 #import commands
@@ -129,12 +128,13 @@ class MainWindow(object):
                 ("black", "black")):
             _palette.append((type + name, color, bg))
 
-    def __init__(self, channel, is_group, my_telephone):
+    def __init__(self, config, channel, is_group):
+        self.config = config
         self.shall_quit = False
 
         self.channel = channel
         self.is_group = is_group
-        self.my_telephone = my_telephone
+        self.my_telephone = config["my_telephone"]
         self.contact_names = {}
 
         if self.is_group:
@@ -158,7 +158,8 @@ class MainWindow(object):
         self.signal = pulsate.SignalCli()
         await self.signal.connect()
 
-        self.signal_db = pulsate.SignalMessageDatabase("main.db")
+        database_filename = self.config["database"]
+        self.signal_db = pulsate.SignalMessageDatabase(database_filename)
 
         for message in self.signal_db.fetch():
             await self.update(message)
@@ -474,10 +475,7 @@ def setup_logging():
 
 
 def main(argv):
-    with open("config.toml", "r") as file:
-        config = toml.loads(file.read())
-
-    my_telephone = config["my_telephone"]
+    config = pulsate.load_config()
 
     if len(argv) == 2:
         choice = sys.argv[1]
@@ -488,7 +486,7 @@ def main(argv):
 
     setup_logging()
 
-    main_window = MainWindow(channel, is_group, my_telephone)
+    main_window = MainWindow(config, channel, is_group)
     sys.excepthook = except_hook
     main_window.main()
 
