@@ -1,5 +1,5 @@
-import signalcli
 import sqlite3
+from pulsate import cli
 
 class SignalMessageDatabase:
     def __init__(self, filename="main.db"):
@@ -49,7 +49,7 @@ class SignalMessageDatabase:
             """, (message_id,))
             attachments = [attachment for (attachment,)
                            in self._cursor.fetchall()]
-            message = signalcli.SignalMessage(timestamp, source, destination,
+            message = cli.SignalMessage(timestamp, source, destination,
                                               group_id, text, attachments)
             messages.append(message)
 

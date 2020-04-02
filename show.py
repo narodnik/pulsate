@@ -1,14 +1,13 @@
 import asyncio
 import codecs
-import signalcli
-import signaldb
+import pulsate
 import magic
 
 async def main():
-    signal = signalcli.SignalCli()
+    signal = pulsate.SignalCli()
     await signal.connect()
 
-    signal_db = signaldb.SignalMessageDatabase("main.db")
+    signal_db = pulsate.SignalMessageDatabase("main.db")
 
     for message in signal_db.fetch()[-60:]:
         display_line = ""

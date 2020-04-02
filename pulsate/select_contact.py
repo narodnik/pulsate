@@ -2,16 +2,16 @@ import asyncio
 import binascii
 import codecs
 import iterfzf
-import signalcli
-import signaldb
+from pulsate import cli
+from pulsate import db
 
 async def gather_contact_dict():
     contact_dict = {}
 
-    signal = signalcli.SignalCli()
+    signal = cli.SignalCli()
     await signal.connect()
 
-    signal_db = signaldb.SignalMessageDatabase("main.db")
+    signal_db = db.SignalMessageDatabase("main.db")
     for number in signal_db.fetch_numbers():
         name = await signal.get_contact_name(number)
         if not name:
@@ -35,7 +35,7 @@ def compute_contact_dict():
     loop = asyncio.get_event_loop()
     return loop.run_until_complete(gather_contact_dict())
 
-def select(choice=None):
+def select_contact(choice=None):
     contact_dict = compute_contact_dict()
 
     if choice is None:

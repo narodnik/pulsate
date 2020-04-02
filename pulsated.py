@@ -1,13 +1,12 @@
 import asyncio
-import signalcli
-import signaldb
+import pulsate
 import sqlite3
 
 async def main():
-    signal = signalcli.SignalCli()
+    signal = pulsate.SignalCli()
     await signal.connect()
 
-    signal_db = signaldb.SignalMessageDatabase("main.db")
+    signal_db = pulsate.SignalMessageDatabase("main.db")
 
     while True:
         message = await signal.receive_message()

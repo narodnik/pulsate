@@ -10,6 +10,8 @@ import magic
 import sys
 import traceback
 import re
+import time
+import toml
 import logging
 import locale
 #import commands
@@ -17,8 +19,7 @@ import locale
 import urwid
 from urwid import MetaSignals
 
-import signalcli
-import signaldb
+import pulsate
 
 class ExtendedListBox(urwid.ListBox):
     """
@@ -154,12 +155,12 @@ class MainWindow(object):
             self.run()
 
     async def sync(self):
-        self.signal = signalcli.SignalCli()
+        self.signal = pulsate.SignalCli()
         await self.signal.connect()
 
-        signal_db = signaldb.SignalMessageDatabase("main.db")
+        self.signal_db = pulsate.SignalMessageDatabase("main.db")
 
-        for message in signal_db.fetch():
+        for message in self.signal_db.fetch():
             await self.update(message)
 
     async def receive(self):
@@ -171,6 +172,17 @@ class MainWindow(object):
 
     async def send_message(self, text):
         self.print_sent_message(text)
+
+        message = pulsate.SignalMessage(
+            int(time.time() * 1000),
+            self.my_telephone,
+            self.channel if not self.is_group else None,
+            self.channel if self.is_group else None,
+            text,
+            []
+        )
+        #self.signal_db.add(message)
+
         if self.is_group:
             await self.signal.send_group_message(text, [], self.channel)
         else:
@@ -462,16 +474,17 @@ def setup_logging():
 
 
 def main(argv):
-    import select_contact
+    with open("config.toml", "r") as file:
+        config = toml.loads(file.read())
 
-    my_telephone = "+34685646266"
+    my_telephone = config["my_telephone"]
 
     if len(argv) == 2:
         choice = sys.argv[1]
     else:
         choice = None
 
-    channel, is_group = select_contact.select(choice)
+    channel, is_group = pulsate.select_contact(choice)
 
     setup_logging()
 

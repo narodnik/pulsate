@@ -9,6 +9,7 @@ Python PIP dependencies (pip install --user <package>):
 * janus
 * dbus-next
 * iterfzf
+* toml
 
 You will need my hacked signal-cli:
 
