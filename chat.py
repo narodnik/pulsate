@@ -4,8 +4,6 @@
 # code extracted from nigiri
 
 import asyncio
-import binascii
-import codecs
 import os
 import datetime
 import magic
@@ -228,7 +226,7 @@ class MainWindow(object):
 
     def update_attachments(self, contact_name, attachments):
         for attachment in attachments:
-            self.print_message("", "[Attachment: %s %s]" % (
+            self.print_message(contact_name, "[Attachment: %s %s]" % (
                 magic.from_file(attachment, mime=True), attachment))
 
     def run(self):
@@ -463,54 +461,19 @@ def setup_logging():
         print >> sys.stderr, "Logging init error: %s" % (e)
 
 
-async def gather_contact_dict():
-    contact_dict = {}
-
-    signal = signalcli.SignalCli()
-    await signal.connect()
-
-    signal_db = signaldb.SignalMessageDatabase("main.db")
-    for number in signal_db.fetch_numbers():
-        name = await signal.get_contact_name(number)
-        if not name:
-            continue
-        contact_dict[name] = number
-
-    # Also add in groups too
-
-    group_ids = await signal.get_group_ids()
-    for group_id in group_ids:
-        name = await signal.get_group_name(group_id)
-
-        if not name:
-            continue
-
-        contact_dict[name] = codecs.encode(group_id, 'hex').decode('ascii')
-
-    return contact_dict
-
-def compute_contact_dict():
-    loop = asyncio.get_event_loop()
-    return loop.run_until_complete(gather_contact_dict())
-
 def main(argv):
-    my_telephone = "+1111111"
+    import select_contact
 
-    if len(argv) != 2:
-        contact_dict = compute_contact_dict()
-        import iterfzf
-        number = iterfzf.iterfzf(contact_dict.keys())
-        channel = contact_dict[number]
+    my_telephone = "+34685646266"
+
+    if len(argv) == 2:
+        choice = sys.argv[1]
     else:
-        channel = sys.argv[1]
+        choice = None
+
+    channel, is_group = select_contact.select(choice)
 
     setup_logging()
-
-    try:
-        is_group = True
-        channel = codecs.decode(channel, 'hex')
-    except binascii.Error:
-        is_group = False
 
     main_window = MainWindow(channel, is_group, my_telephone)
     sys.excepthook = except_hook
