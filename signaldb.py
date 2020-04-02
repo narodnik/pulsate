@@ -41,5 +41,6 @@ class SignalMessageDatabase:
             FROM messages
             WHERE destination IS NOT NULL
         """)
-        return self._cursor.fetchall()
+        return [number for (number,) in self._cursor.fetchall()
+                if number is not None]
 

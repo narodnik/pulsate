@@ -463,26 +463,37 @@ def setup_logging():
         print >> sys.stderr, "Logging init error: %s" % (e)
 
 
-def select_contact():
-    return "+111111111"
+async def gather_contact_dict():
+    contact_dict = {}
+
+    signal = signalcli.SignalCli()
+    await signal.connect()
+
+    signal_db = signaldb.SignalMessageDatabase("main.db")
+    for number in signal_db.fetch_numbers():
+        name = await signal.get_contact_name(number)
+        if not name:
+            name = number
+        contact_dict[name] = number
+
+    return contact_dict
+
+def compute_contact_dict():
+    loop = asyncio.get_event_loop()
+    return loop.run_until_complete(gather_contact_dict())
 
 def main(argv):
+    my_telephone = "+1111111"
+
     if len(argv) != 2:
-        channel = select_contact()
+        contact_dict = compute_contact_dict()
+        import iterfzf
+        number = iterfzf.iterfzf(contact_dict.keys())
+        channel = contact_dict[number]
     else:
         channel = sys.argv[1]
 
     setup_logging()
-
-    my_telephone = "+11111"
-
-    #channel = "+491784962531"
-    #is_group = False
-
-    #import codecs
-    #channel = b'e318232a26c4640c1e815751c11d1cfc'
-    #channel = codecs.decode(channel, 'hex')
-    #is_group = True
 
     try:
         is_group = True
