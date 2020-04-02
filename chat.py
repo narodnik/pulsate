@@ -473,8 +473,19 @@ async def gather_contact_dict():
     for number in signal_db.fetch_numbers():
         name = await signal.get_contact_name(number)
         if not name:
-            name = number
+            continue
         contact_dict[name] = number
+
+    # Also add in groups too
+
+    group_ids = await signal.get_group_ids()
+    for group_id in group_ids:
+        name = await signal.get_group_name(group_id)
+
+        if not name:
+            continue
+
+        contact_dict[name] = codecs.encode(group_id, 'hex').decode('ascii')
 
     return contact_dict
 

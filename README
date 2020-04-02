@@ -4,6 +4,7 @@ Python PIP dependencies (pip install --user <package>):
 * sqlite3
 * janus
 * dbus-next
+* iterfzf
 
 You will need my hacked signal-cli:
 
