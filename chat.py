@@ -186,7 +186,7 @@ class MainWindow(object):
             if (message.source == self.my_telephone
                     and message.destination == self.channel):
                 self.update_sent(message)
-            elif message.source == self.channel:
+            elif message.source == self.channel and message.group_id is None:
                 await self.update_receive(message)
 
     async def update_group(self, message):
@@ -463,14 +463,18 @@ def setup_logging():
         print >> sys.stderr, "Logging init error: %s" % (e)
 
 
+def select_contact():
+    return "+111111111"
+
 def main(argv):
     if len(argv) != 2:
-        print("pulsate CHANNEL", file=sys.stderr)
-        return
+        channel = select_contact()
+    else:
+        channel = sys.argv[1]
 
     setup_logging()
 
-    my_telephone = "+34685646266"
+    my_telephone = "+11111"
 
     #channel = "+491784962531"
     #is_group = False
@@ -479,8 +483,6 @@ def main(argv):
     #channel = b'e318232a26c4640c1e815751c11d1cfc'
     #channel = codecs.decode(channel, 'hex')
     #is_group = True
-
-    channel = sys.argv[1]
 
     try:
         is_group = True
