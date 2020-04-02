@@ -36,9 +36,15 @@ def compute_contact_dict():
 
 def select(choice=None):
     contact_dict = compute_contact_dict()
-    import iterfzf
-    number = iterfzf.iterfzf(contact_dict.keys())
-    channel = contact_dict[number]
+
+    if choice is None:
+        import iterfzf
+        number = iterfzf.iterfzf(contact_dict.keys())
+        channel = contact_dict[number]
+    elif choice in contact_dict.keys():
+        channel = contact_dict[choice]
+    else:
+        channel = choice
 
     try:
         is_group = True
