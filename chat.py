@@ -174,20 +174,22 @@ class MainWindow(object):
     async def send_message(self, text):
         self.print_sent_message(text)
 
+        if self.is_group:
+            timestamp = \
+                await self.signal.send_group_message(text, [], self.channel)
+        else:
+            timestamp = \
+                await self.signal.send_message(text, [], [self.channel])
+
         message = pulsate.SignalMessage(
-            int(time.time() * 1000),
+            timestamp,
             self.my_telephone,
             self.channel if not self.is_group else None,
             self.channel if self.is_group else None,
             text,
             []
         )
-        #self.signal_db.add(message)
-
-        if self.is_group:
-            await self.signal.send_group_message(text, [], self.channel)
-        else:
-            await self.signal.send_message(text, [], [self.channel])
+        self.signal_db.add(message)
 
     async def update(self, message):
         if self.is_group:
@@ -482,7 +484,7 @@ def main(argv):
     else:
         choice = None
 
-    channel, is_group = pulsate.select_contact(choice)
+    channel, is_group = pulsate.select_contact(choice, config)
 
     setup_logging()
 

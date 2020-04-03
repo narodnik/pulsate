@@ -5,13 +5,18 @@ import iterfzf
 from pulsate import cli
 from pulsate import db
 
-async def gather_contact_dict():
+async def gather_contact_dict(config):
     contact_dict = {}
 
     signal = cli.SignalCli()
     await signal.connect()
 
-    signal_db = db.SignalMessageDatabase("main.db")
+    if config is None:
+        database_filename = "pulsate.db"
+    else:
+        database_filename = config["database"]
+
+    signal_db = db.SignalMessageDatabase(database_filename)
     for number in signal_db.fetch_numbers():
         name = await signal.get_contact_name(number)
         if not name:
@@ -31,12 +36,13 @@ async def gather_contact_dict():
 
     return contact_dict
 
-def compute_contact_dict():
+def compute_contact_dict(config):
     loop = asyncio.get_event_loop()
-    return loop.run_until_complete(gather_contact_dict())
+    return loop.run_until_complete(gather_contact_dict(config))
 
-def select_contact(choice=None):
-    contact_dict = compute_contact_dict()
+def select_contact(choice=None, config=None):
+    contact_dict = compute_contact_dict(config)
+    print(contact_dict)
 
     if choice is None:
         number = iterfzf.iterfzf(contact_dict.keys())

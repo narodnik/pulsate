@@ -87,11 +87,14 @@ class SignalCli:
         return name
 
     async def send_message(self, message, attachments, recipient):
-        await self._interface.call_send_message(message, attachments, recipient)
+        timestamp = await self._interface.call_send_message(
+            message, attachments, recipient)
+        return timestamp
 
     async def send_group_message(self, message, attachments, group_id):
-        await self._interface.call_send_group_message(
+        timestamp = await self._interface.call_send_group_message(
             message, attachments, group_id)
+        return timestamp
 
 async def main():
     import codecs
