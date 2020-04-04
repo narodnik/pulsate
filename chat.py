@@ -361,6 +361,19 @@ class MainWindow(object):
         elif key in ("ctrl d", 'ctrl c'):
             self.quit()
 
+        elif key in ("ctrl w"):
+            while True:
+                text = self.footer.edit_text
+                self.footer.keypress((len(text),), "backspace")
+
+                text = self.footer.edit_text
+                pos = self.footer.edit_pos
+
+                logging.debug("text=%s pos=%s" % (text, pos))
+
+                if not text or not pos or text[pos - 1] == " ":
+                    break
+
         elif key == "enter":
             # Parse data or (if parse failed)
             # send it to the current world
