@@ -443,7 +443,11 @@ class MainWindow(object):
         #self.print_text(header)
         #text = urwid.Text(message.text)
         #text.set_align_mode('right')
-        self.print_text("%s> %s" % (contact_name, text))
+
+        color = "gray"
+
+        text = [(color, contact_name), "> %s" % text]
+        self.print_text(text)
         
     def print_text(self, text):
         """
