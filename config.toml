@@ -1,0 +1,4 @@
+my_telephone = "+11111111"
+database = "pulsate.db"
+logfile = "/tmp/chat.log"
+

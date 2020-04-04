@@ -11,9 +11,9 @@ Python PIP dependencies (pip install --user <package>):
 * iterfzf
 * toml
 
-You will need my hacked signal-cli:
+You will need git version of signal-cli:
 
-$ git clone github.com/narodnik/signal-cli/
+$ git clone github.com/AsamK/signal-cli/
 $ cd signal-cli
 $ gradle build && gradle installDist
 $ ./build/install/signal-cli/bin/signal-cli -u +12yoursignalnumber daemon
