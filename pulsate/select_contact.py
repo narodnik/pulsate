@@ -42,7 +42,6 @@ def compute_contact_dict(config):
 
 def select_contact(choice=None, config=None):
     contact_dict = compute_contact_dict(config)
-    print(contact_dict)
 
     if choice is None:
         number = iterfzf.iterfzf(contact_dict.keys())
