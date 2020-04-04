@@ -171,15 +171,17 @@ class MainWindow(object):
             message = await self.signal.receive_message()
             await self.update(message)
 
-    async def send_message(self, text):
-        self.print_sent_message(text)
+    async def send_message(self, text, attachments):
+        if text:
+            self.print_sent_message(text)
+        self.update_attachments("", attachments)
 
         if self.is_group:
-            timestamp = \
-                await self.signal.send_group_message(text, [], self.channel)
+            timestamp = await self.signal.send_group_message(
+                text, attachments, self.channel)
         else:
-            timestamp = \
-                await self.signal.send_message(text, [], [self.channel])
+            timestamp = await self.signal.send_message(
+                text, attachments, [self.channel])
 
         message = pulsate.SignalMessage(
             timestamp,
@@ -369,10 +371,30 @@ class MainWindow(object):
                 text = self.footer.edit_text
                 pos = self.footer.edit_pos
 
-                logging.debug("text=%s pos=%s" % (text, pos))
-
                 if not text or not pos or text[pos - 1] == " ":
                     break
+
+        #elif key in ("ctrl left"):
+        #    text = self.footer.edit_text
+        #    pos = self.footer.edit_pos
+        #    while True:
+        #        self.footer.keypress((len(text),), "left")
+        #        pos -= 1
+        #        if text[pos - 1] == " ":
+        #            break
+
+        #elif key in ("ctrl right"):
+        #    text = self.footer.edit_text
+        #    pos = self.footer.edit_pos
+        #    end_pos = len(text) - 1
+        #    while pos < end_pos:
+        #        self.footer.keypress((len(text),), "right")
+        #        pos += 1
+        #        if text[pos] == " ":
+        #            break
+        #        if pos == end_pos:
+        #            self.footer.keypress((len(text),), "right")
+        #            break
 
         elif key == "enter":
             # Parse data or (if parse failed)
@@ -385,11 +407,19 @@ class MainWindow(object):
             if text in ('quit', 'exit', ':q'):
                 self.quit()
 
-            if text.strip():
+            elif text.startswith(":attach"):
+                attachments = text.split(" ")[1:]
+                for attachment in attachments:
+                    logging.debug("Attachment: %s" % (attachment))
+
+                loop = asyncio.get_event_loop()
+                loop.create_task(self.send_message("", attachments))
+
+            elif text.strip():
                 #self.print_sent_message(text)
 
                 loop = asyncio.get_event_loop()
-                loop.create_task(self.send_message(text))
+                loop.create_task(self.send_message(text, []))
 
         else:
             self.context.keypress(size, key)
