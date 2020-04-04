@@ -492,7 +492,7 @@ def except_hook(extype, exobj, extb, manual=False):
     print >> sys.stderr, message
 
 
-def setup_logging():
+def setup_logging(logfile):
     """ set the path of the logfile to tekka.logfile config
         value and create it (including path) if needed.
         After that, add a logging handler for exceptions
@@ -508,7 +508,6 @@ def setup_logging():
                 if record.exc_info:
                     except_hook(*record.exc_info)
 
-        logfile = '/tmp/chat.log'
         logdir = os.path.dirname(logfile)
 
         if not os.path.exists(logdir):
@@ -533,7 +532,8 @@ def main(argv):
 
     channel, is_group = pulsate.select_contact(choice, config)
 
-    setup_logging()
+    logfile = config["logfile"]
+    setup_logging(logfile)
 
     main_window = MainWindow(config, channel, is_group)
     sys.excepthook = except_hook
