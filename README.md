@@ -5,7 +5,6 @@
 Python PIP dependencies (pip install --user <package>):
 
 * python-magic
-* sqlite3
 * janus
 * dbus-next
 * iterfzf
