@@ -11,6 +11,8 @@ async def main():
     database_filename = config["database"]
     signal_db = pulsate.SignalMessageDatabase(database_filename)
 
+    my_telephone = config["my_telephone"]
+
     for message in signal_db.fetch()[-60:]:
         display_line = ""
 
@@ -28,17 +30,18 @@ async def main():
             if group_name:
                 display_line += "%s - " % group_name
 
-            contact_name = await signal.get_contact_name(message.source)
+            if message.source == my_telephone:
+                contact_name = "Me"
+            else:
+                contact_name = await signal.get_contact_name(message.source)
+
             if contact_name is None:
                 display_line += "%s: %s" % (message.source, message.text)
             else:
                 display_line += "%s (%s): %s" % (
                     contact_name, message.source, message.text)
         else:
-            if group_name:
-                destination = group_name
-            else:
-                destination = await signal.get_contact_name(message.destination)
+            destination = await signal.get_contact_name(message.destination)
 
             display_line += "Me to %s (%s): %s" % (
                 destination, message.destination, message.text)
