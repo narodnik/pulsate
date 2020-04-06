@@ -13,7 +13,7 @@ async def main():
 
     my_telephone = config["my_telephone"]
 
-    for message in signal_db.fetch()[-60:]:
+    for message in signal_db.fetch()[-80:]:
         display_line = ""
 
         if message.group_id:
@@ -46,7 +46,8 @@ async def main():
             display_line += "Me to %s (%s): %s" % (
                 destination, message.destination, message.text)
 
-        print(display_line)
+        if message.text:
+            print(display_line)
 
         if message.attachments:
             for attachment in message.attachments:

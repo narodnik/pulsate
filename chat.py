@@ -172,10 +172,6 @@ class MainWindow(object):
             await self.update(message)
 
     async def send_message(self, text, attachments):
-        if text:
-            self.print_sent_message(text)
-        self.update_attachments("", attachments)
-
         if self.is_group:
             timestamp = await self.signal.send_group_message(
                 text, attachments, self.channel)
@@ -192,6 +188,10 @@ class MainWindow(object):
             []
         )
         self.signal_db.add(message)
+
+        if text:
+            self.print_sent_message(text)
+        self.update_attachments("", attachments)
 
     async def update(self, message):
         if self.is_group:
