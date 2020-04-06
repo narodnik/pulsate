@@ -51,8 +51,12 @@ async def main():
 
         if message.attachments:
             for attachment in message.attachments:
-                print("  Attachment:", magic.from_file(attachment, mime=True),
-                                       attachment)
+                try:
+                    file_type = magic.from_file(attachment, mime=True)
+                except FileNotFoundError:
+                    file_type = "<deleted>"
+
+                print("  Attachment:", file_type, attachment)
 
 if __name__ == "__main__":
     asyncio.get_event_loop().run_until_complete(main())

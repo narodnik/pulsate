@@ -243,8 +243,13 @@ class MainWindow(object):
 
     def update_attachments(self, contact_name, attachments):
         for attachment in attachments:
+            try:
+                file_type = magic.from_file(attachment, mime=True)
+            except FileNotFoundError:
+                file_type = "<deleted>"
+
             self.print_message(contact_name, "[Attachment: %s %s]" % (
-                magic.from_file(attachment, mime=True), attachment))
+                file_type, attachment))
 
     def run(self):
         """ 
