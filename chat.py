@@ -185,7 +185,7 @@ class MainWindow(object):
             self.channel if not self.is_group else None,
             self.channel if self.is_group else None,
             text,
-            []
+            attachments
         )
         self.signal_db.add(message)
 
