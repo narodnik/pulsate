@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import asyncio
 import pulsate
 import sqlite3
