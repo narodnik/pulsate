@@ -2,9 +2,14 @@
 import asyncio
 import codecs
 import pulsate
+import sys
 import magic
 
-async def main():
+async def main(argv):
+    total = 40
+    if len(argv) == 2:
+        total = int(argv[1])
+
     signal = pulsate.SignalCli()
     await signal.connect()
 
@@ -14,7 +19,7 @@ async def main():
 
     my_telephone = config["my_telephone"]
 
-    for message in signal_db.fetch()[-200:]:
+    for message in signal_db.fetch()[-total:]:
         display_line = ""
 
         if message.group_id:
@@ -59,5 +64,5 @@ async def main():
             print("  Attachment:", file_type, attachment)
 
 if __name__ == "__main__":
-    asyncio.get_event_loop().run_until_complete(main())
+    asyncio.get_event_loop().run_until_complete(main(sys.argv))
 
