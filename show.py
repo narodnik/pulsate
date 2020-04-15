@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import asyncio
 import codecs
 import pulsate
@@ -13,7 +14,7 @@ async def main():
 
     my_telephone = config["my_telephone"]
 
-    for message in signal_db.fetch()[-80:]:
+    for message in signal_db.fetch()[-200:]:
         display_line = ""
 
         if message.group_id:
@@ -49,14 +50,13 @@ async def main():
         if message.text:
             print(display_line)
 
-        if message.attachments:
-            for attachment in message.attachments:
-                try:
-                    file_type = magic.from_file(attachment, mime=True)
-                except FileNotFoundError:
-                    file_type = "<deleted>"
+        for attachment in message.attachments:
+            try:
+                file_type = magic.from_file(attachment, mime=True)
+            except FileNotFoundError:
+                file_type = "<deleted>"
 
-                print("  Attachment:", file_type, attachment)
+            print("  Attachment:", file_type, attachment)
 
 if __name__ == "__main__":
     asyncio.get_event_loop().run_until_complete(main())
