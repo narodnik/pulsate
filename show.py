@@ -20,7 +20,7 @@ async def main(argv):
     my_telephone = config["my_telephone"]
 
     for message in signal_db.fetch()[-total:]:
-        display_line = ""
+        display_prefix = ""
 
         if message.group_id:
             group_name = await signal.get_group_name(message.group_id)
@@ -34,7 +34,7 @@ async def main(argv):
 
         if message.destination is None:
             if group_name:
-                display_line += "%s - " % group_name
+                display_prefix += "%s - " % group_name
 
             if message.source == my_telephone:
                 contact_name = "Me"
@@ -42,18 +42,18 @@ async def main(argv):
                 contact_name = await signal.get_contact_name(message.source)
 
             if contact_name is None:
-                display_line += "%s: %s" % (message.source, message.text)
+                display_prefix += "%s" % message.source
             else:
-                display_line += "%s (%s): %s" % (
-                    contact_name, message.source, message.text)
+                display_prefix += "%s (%s)" % (
+                    contact_name, message.source)
         else:
             destination = await signal.get_contact_name(message.destination)
 
-            display_line += "Me to %s (%s): %s" % (
-                destination, message.destination, message.text)
+            display_prefix += "Me to %s (%s)" % (
+                destination, message.destination)
 
         if message.text:
-            print(display_line)
+            print("%s: %s" % (display_prefix, message.text))
 
         for attachment in message.attachments:
             try:
@@ -61,7 +61,8 @@ async def main(argv):
             except FileNotFoundError:
                 file_type = "<deleted>"
 
-            print("  Attachment:", file_type, attachment)
+            print("%s: Attachment: %s %s" %
+                  (display_prefix, file_type, attachment))
 
 if __name__ == "__main__":
     asyncio.get_event_loop().run_until_complete(main(sys.argv))
