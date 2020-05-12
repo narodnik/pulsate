@@ -9,6 +9,7 @@ Python PIP dependencies (pip install --user <package>):
 * dbus-next
 * iterfzf
 * toml
+* urwid
 
 You will need git version of signal-cli:
 
