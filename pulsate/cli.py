@@ -45,7 +45,7 @@ class SignalCli:
         self._interface.on_message_received(self._on_message_received)
         self._interface.on_sync_message_received(self._on_sync_message_received)
 
-        self._queue = janus.Queue(loop=asyncio.get_event_loop())
+        self._queue = janus.Queue()
 
     def _on_message_received(self, timestamp, sender,
                              group_id, message, attachments):
