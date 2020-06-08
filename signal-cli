@@ -1,0 +1,5 @@
+#!/bin/bash
+# Put this file in ~/.local/bin/
+SIGNAL_CLI_PATH="/path/to/signal-cli/"
+cd $SIGNAL_CLI_PATH/build/install/signal-cli/bin/ && ./signal-cli "$@"
+
