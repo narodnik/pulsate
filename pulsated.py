@@ -1,11 +1,25 @@
 #!/usr/bin/python
 import asyncio
+import dbus_next
+import os
 import pulsate
 import sqlite3
 
 async def main():
+    config = pulsate.load_config()
+    my_telephone = config["my_telephone"]
+
+    os.system('signal-cli -u "%s" daemon' % my_telephone)
+
     signal = pulsate.SignalCli()
-    await signal.connect()
+
+    # Keep trying connect until it works
+    while True:
+        try:
+            await signal.connect()
+            break
+        except dbus_next.errors.DBusError:
+            continue
 
     config = pulsate.load_config()
     database_filename = config["database"]
