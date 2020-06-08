@@ -24,7 +24,7 @@ async def main(argv):
 
         if message.group_id:
             group_name = await signal.get_group_name(message.group_id)
-            if group_name == "":
+            if group_name is None:
                 group_name = "(Unnamed group)"
 
             group_id = codecs.encode(message.group_id, 'hex').decode('ascii')

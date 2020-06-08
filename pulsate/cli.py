@@ -83,8 +83,10 @@ class SignalCli:
         return group_ids
 
     async def get_group_name(self, group_id):
-        name = await self._interface.call_get_group_name(group_id)
-        return name
+        try:
+            return await self._interface.call_get_group_name(group_id)
+        except dbus_next.errors.DBusError:
+            return None
 
     async def send_message(self, message, attachments, recipient):
         timestamp = await self._interface.call_send_message(
