@@ -1,6 +1,7 @@
 import asyncio
 import binascii
 import codecs
+import dbus_next
 import iterfzf
 from pulsate import cli
 from pulsate import db
@@ -27,7 +28,10 @@ async def gather_contact_dict(config):
 
     group_ids = await signal.get_group_ids()
     for group_id in group_ids:
-        name = await signal.get_group_name(group_id)
+        try:
+            name = await signal.get_group_name(group_id)
+        except dbus_next.errors.DBusError:
+            continue
 
         if not name:
             continue
