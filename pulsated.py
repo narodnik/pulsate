@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import asyncio
 import dbus_next
-import os
+import subprocess
 import pulsate
 import sqlite3
 
@@ -9,7 +9,8 @@ async def main():
     config = pulsate.load_config()
     my_telephone = config["my_telephone"]
 
-    os.system('signal-cli -u "%s" daemon' % my_telephone)
+    cmd = 'signal-cli -u "%s" daemon' % my_telephone
+    process = subprocess.Popen(cmd, shell=True)
 
     signal = pulsate.SignalCli()
 
