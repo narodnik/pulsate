@@ -449,9 +449,11 @@ class MainWindow(object):
         #text = urwid.Text(message.text)
         #text.set_align_mode('right')
 
-        color = "gray"
+        text = "> %s" % text
 
-        text = [(color, contact_name), "> %s" % text]
+        if contact_name:
+            text = [("gray", contact_name), text]
+
         self.print_text(text)
         
     def print_text(self, text):
@@ -485,17 +487,16 @@ def except_hook(extype, exobj, extb, manual=False):
         except NameError:
             pass
 
-    message = _("An error occured:\n%(divider)s\n%(traceback)s\n"\
+    message = "An error occured:\n%(divider)s\n%(traceback)s\n"\
         "%(exception)s\n%(divider)s" % {
             "divider": 20*"-",
             "traceback": "".join(traceback.format_tb(extb)),
             "exception": extype.__name__+": "+str(exobj)
-        })
+        }
 
     logging.error(message)
 
-    print >> sys.stderr, message
-
+    print(message, file=sys.stderr)
 
 def setup_logging(logfile):
     """ set the path of the logfile to tekka.logfile config
