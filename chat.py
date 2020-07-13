@@ -406,6 +406,9 @@ class MainWindow(object):
             # send it to the current world
             text = self.footer.get_edit_text()
 
+            with open("/tmp/pulsate.log", "a") as file:
+                file.write(text + "\n")
+
             self.footer.set_edit_text(" "*len(text))
             self.footer.set_edit_text("")
 
