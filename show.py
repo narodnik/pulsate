@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import argparse
 import asyncio
 import codecs
 import pulsate
@@ -6,9 +7,12 @@ import sys
 import magic
 
 async def main(argv):
-    total = 40
-    if len(argv) == 2:
-        total = int(argv[1])
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--filter')
+    parser.add_argument('--total', type=int)
+    args = parser.parse_args()
+
+    total = args.total if args.total is not None else 40
 
     signal = pulsate.SignalCli()
     await signal.connect()
@@ -27,6 +31,9 @@ async def main(argv):
             if group_name is None:
                 group_name = "(Unnamed group)"
 
+            if args.filter is not None and group_name != args.filter:
+                continue
+
             group_id = codecs.encode(message.group_id, 'hex').decode('ascii')
             group_name += " %s" % group_id
         else:
@@ -41,6 +48,9 @@ async def main(argv):
             else:
                 contact_name = await signal.get_contact_name(message.source)
 
+            if args.filter is not None and contact_name != args.filter:
+                continue
+
             if contact_name is None:
                 display_prefix += "%s" % message.source
             else:
@@ -48,6 +58,9 @@ async def main(argv):
                     contact_name, message.source)
         else:
             destination = await signal.get_contact_name(message.destination)
+
+            if args.filter is not None and destination != args.filter:
+                continue
 
             display_prefix += "Me to %s (%s)" % (
                 destination, message.destination)
