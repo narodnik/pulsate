@@ -55,6 +55,32 @@ class SignalMessageDatabase:
 
         return messages
 
+    def fetch_by_source(self, source, begin_timestamp=0):
+        messages = []
+
+        self._cursor.execute("""
+            SELECT id, timestamp, source, destination, group_id, text
+            FROM messages
+            WHERE timestamp >= ? AND source=?
+            ORDER BY timestamp ASC
+        """, (begin_timestamp, source))
+
+        for (message_id, timestamp, source, destination, group_id, text) \
+            in self._cursor.fetchall():
+
+            self._cursor.execute("""
+                SELECT attachment
+                FROM attachments
+                WHERE message_id=?
+            """, (message_id,))
+            attachments = [attachment for (attachment,)
+                           in self._cursor.fetchall()]
+            message = cli.SignalMessage(timestamp, source, destination,
+                                              group_id, text, attachments)
+            messages.append(message)
+
+        return messages
+
     def fetch_numbers(self):
         self._cursor.execute("""
             SELECT source
