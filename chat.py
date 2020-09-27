@@ -245,7 +245,7 @@ class MainWindow(object):
         for attachment in attachments:
             try:
                 file_type = magic.from_file(attachment, mime=True)
-            except FileNotFoundError:
+            except OSError:
                 file_type = "<deleted>"
 
             self.print_message(contact_name, "[Attachment: %s %s]" % (
